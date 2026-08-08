@@ -1,8 +1,10 @@
+import { ExampleWithState } from './examples/ExampleWithState';
+// import { ExampleWithRouter } from './examples/ExampleWithRouter';
+
 function App() {
   return (
-    <>
-      Hello World
-    </>
+    <ExampleWithState />
+    // <ExampleWithRouter />
   )
 }
 
