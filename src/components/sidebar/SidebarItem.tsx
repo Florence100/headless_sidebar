@@ -1,19 +1,18 @@
-import { Children, useEffect, useCallback, useMemo, useState } from "react";
+import { Children, useState } from "react";
 import { useSidebarContext } from "../../hooks/useSidebarContext";
 import { SidebarSubmenu } from "./SidebarSubmenu";
-import type { SidebarItemProps, SidebarNode, Id } from "../../types/types";
+import type { SidebarItemProps } from "../../types/types";
 
-export function SidebarItem ({
+export function SidebarItem({
   id,
   parentId,
   icon,
   label,
-  className = '',
+  className="",
   children,
 }: SidebarItemProps) {
-  const { 
+  const {
     isCollapsed,
-    sidebarNodes,
     openedMenuId,
     setOpenedMenuId,
     activeMenuIds,
@@ -23,97 +22,101 @@ export function SidebarItem ({
   const [showTooltip, setShowTooltip] = useState(false);
 
   const hasSubmenu = Children.count(children) > 0;
+  const isSubmenu = parentId !== undefined;
 
-  const currentNode: SidebarNode = useMemo(() => {
-    return {
-      id: id,
-      parentId: parentId ? parentId : undefined,
-    }
-  }, [id, parentId]);
+  const isActive = activeMenuIds.includes(id);
 
-  const isSubmenu = currentNode.parentId !== undefined;
-
-  const registerNode = useCallback((node: SidebarNode) => {
-    sidebarNodes.set(id, node);
-  }, [sidebarNodes, id]);
-
-  const unRegisterNode = useCallback((id: Id) => {
-    sidebarNodes.delete(id);
-  }, [sidebarNodes]);
-
-  useEffect(() => {
-    registerNode(currentNode);
-
-    return () => {
-      unRegisterNode(id);
-    }
-  }, [currentNode, registerNode, unRegisterNode, id]);
+  const isOpen = hasSubmenu && openedMenuId === id;
 
   const onClickHandler = () => {
-    setOpenedMenuId(id);
-
     if (parentId) {
-      const ids = [parentId, id];
-      setActiveMenuIds(ids);
+      setActiveMenuIds([parentId, id]);
     } else {
       setActiveMenuIds([id]);
     }
-  }
+
+    if (isCollapsed) {
+      setOpenedMenuId(null);
+      return;
+    }
+
+    setOpenedMenuId(
+      hasSubmenu && openedMenuId !== id
+        ? id
+        : null
+    );
+  };
 
   const onMouseEnterHandler = () => {
-    if (isCollapsed) {
-      setOpenedMenuId(id);
-      if (!hasSubmenu) {
-        setShowTooltip(true);
-      }
+    if (!isCollapsed) {
+      return;
     }
-  }
+
+    if (isSubmenu) {
+      return;
+    }
+
+    if (hasSubmenu) {
+      setOpenedMenuId(id);
+      return;
+    }
+
+    setOpenedMenuId(null);
+
+    if (label) {
+      setShowTooltip(true);
+    }
+  };
 
   const onMouseLeaveHandler = () => {
     setShowTooltip(false);
-  }
+  };
 
   return (
-    <div className={className} data-active={activeMenuIds?.includes(id)}>
+    <div
+      className={className}
+      data-active={isActive}
+    >
       {!isSubmenu && (
-        <span 
-          onClick={onClickHandler} 
-          onMouseEnter={onMouseEnterHandler} 
+        <span
+          onClick={onClickHandler}
+          onMouseEnter={onMouseEnterHandler}
           onMouseLeave={onMouseLeaveHandler}
           className="menu"
         >
-          {icon && <span>{ icon }</span>}
-          {label && !isCollapsed && <span>{ label }</span>}
+          {icon && <span>{icon}</span>}
+
+          {label && !isCollapsed && (
+            <span>{label}</span>
+          )}
         </span>
       )}
 
-      {showTooltip && <div className="tooltip">{label}</div>}
+      {showTooltip && (
+        <div className="tooltip">
+          {label}
+        </div>
+      )}
 
       {isSubmenu && (
-        <span onClick={onClickHandler} className="submenuItem" >
-          {icon && <span>{ icon }</span>}
-          {label && <span>{ label }</span>}
+        <span
+          onClick={onClickHandler}
+          className="submenuItem"
+        >
+          {icon && <span>{icon}</span>}
+          {label && <span>{label}</span>}
         </span>
       )}
 
-      {!isCollapsed && hasSubmenu && activeMenuIds?.includes(id) && (
+      {isOpen && (
         <SidebarSubmenu
           parentId={id}
-          isOpen={true}
-        >
-          {children}
-        </SidebarSubmenu>
-      )}
-
-      {isCollapsed && hasSubmenu && openedMenuId === id && (
-        <SidebarSubmenu
-          parentId={id}
-          isOpen={true}
+          isOpen
           label={label}
         >
           {children}
         </SidebarSubmenu>
       )}
     </div>
-  )
+  );
 }

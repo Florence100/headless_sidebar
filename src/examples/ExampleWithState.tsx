@@ -70,6 +70,7 @@ export function ExampleWithState() {
               [&_.tooltip]:right-[-16px]
               [&_.tooltip]:top-2
               [&_.tooltip]:translate-x-[100%]
+              [&_.tooltip]:pointer-events-none
             "
           />
 
@@ -91,6 +92,7 @@ export function ExampleWithState() {
               [&_.tooltip]:right-[-16px]
               [&_.tooltip]:top-2
               [&_.tooltip]:translate-x-[100%]
+              [&_.tooltip]:pointer-events-none
             "
           />
 
@@ -112,6 +114,7 @@ export function ExampleWithState() {
               [&_.tooltip]:right-[-16px]
               [&_.tooltip]:top-2
               [&_.tooltip]:translate-x-[100%]
+              [&_.tooltip]:pointer-events-none
             "
           />
 
@@ -133,6 +136,7 @@ export function ExampleWithState() {
               [&_.tooltip]:right-[-16px]
               [&_.tooltip]:top-2
               [&_.tooltip]:translate-x-[100%]
+              [&_.tooltip]:pointer-events-none
             "
           />
 

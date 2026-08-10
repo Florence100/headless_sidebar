@@ -25,8 +25,14 @@ export function SidebarSubmenu ({
   }
 
   return (
-    <div onMouseLeave={onMouseLeaveHandler} className={`submenu ${isCollapsed ? "collapsed" : ""}`}>
-      {isCollapsed && <div className="submenuTitle">{label}</div>}
+    <div 
+      onMouseLeave={onMouseLeaveHandler} 
+      className={`submenu ${isCollapsed ? "collapsed" : ""}`}
+    >
+      {isCollapsed && label && (
+        <div className="submenuTitle">{label}</div>
+      )}
+      
       {isOpen && Children.map(children, (child) => {
         if (isValidElement(child)) {
           return cloneElement(child as ReactElement<SidebarItemProps>, { 

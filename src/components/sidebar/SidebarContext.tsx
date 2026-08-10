@@ -4,10 +4,10 @@ import type { Id } from "../../types/types";
 import { type SidebarContextValue, SidebarContext } from "../../hooks/useSidebarContext";
 
 interface SidebarContextProps {
-  collapsed?: boolean;
-  collapsedDefault?: boolean;
+  collapsed?: boolean; // Controlled collapsed state.
+  collapsedDefault?: boolean; //Initial value for uncontrolled mode.
   onCollapsedChange?: (collapsed: boolean) => void;
-  activeIds?: Id[];
+  activeIds?: Id[]; //Controlled active menu path.
   onActiveChange?: (ids: Id[]) => void;
   children: ReactNode;
 }
@@ -21,32 +21,38 @@ export function SidebarProvider({
   children
 }: SidebarContextProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(collapsedDefault);
-  const [internalActiveIds, setInternalActiveIds] = useState<Id[] | null>(null);
+  const [internalActiveIds, setInternalActiveIds] = useState<Id[]>([]);
   const [openedMenuId, setOpenedMenuId] = useState<string | null>(null);
 
-  const toggleCollapse = () => {
-    if (collapsed !== undefined && onCollapsedChange !== undefined) {
-      return onCollapsedChange(!collapsed);
-    }
+  const isCollapsed = collapsed ?? internalCollapsed;
+  const currentActiveIds = activeIds ?? internalActiveIds;
 
-    return setInternalCollapsed(!internalCollapsed);
-  }
+  const toggleCollapse = () => {
+    const nextValue = !isCollapsed;
+
+    if (onCollapsedChange) {
+      onCollapsedChange(nextValue);
+    } else {
+      setInternalCollapsed(nextValue);
+    }
+  };
+
+  const setActiveMenuIds = (ids: Id[]) => {
+    if (onActiveChange) {
+      onActiveChange(ids);
+    } else {
+      setInternalActiveIds(ids);
+    }
+  };
 
   const value: SidebarContextValue = {
-    isCollapsed: collapsed !== undefined && onCollapsedChange !== undefined 
-      ? collapsed 
-      : internalCollapsed,
-    toggleCollapse: toggleCollapse,
-    sidebarNodes: new Map(),
-    openedMenuId: openedMenuId,
-    setOpenedMenuId: setOpenedMenuId,
-    activeMenuIds: activeIds !== undefined && onActiveChange !== undefined 
-      ? activeIds as Id[] | null 
-      : internalActiveIds,
-    setActiveMenuIds: activeIds !== undefined && onActiveChange !== undefined 
-      ? onActiveChange 
-      : setInternalActiveIds,
-  }
+    isCollapsed,
+    toggleCollapse,
+    openedMenuId,
+    setOpenedMenuId,
+    activeMenuIds: currentActiveIds,
+    setActiveMenuIds,
+  };
 
   return (
     <SidebarContext.Provider value={value}>

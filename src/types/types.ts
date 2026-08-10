@@ -10,8 +10,3 @@ export interface SidebarItemProps {
 }
 
 export type Id = string;
-
-export interface SidebarNode {
-  id: Id;
-  parentId?: Id;
-}

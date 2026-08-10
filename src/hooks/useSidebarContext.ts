@@ -1,14 +1,13 @@
 import { createContext, useContext } from "react";
-import type { SidebarNode, Id } from "../types/types";
+import type { Id } from "../types/types";
 
 export interface SidebarContextValue {
   isCollapsed: boolean;
   toggleCollapse(): void;
-  sidebarNodes: Map<string, SidebarNode>;
   openedMenuId: Id | null;
   setOpenedMenuId(id: Id | null): void;
-  activeMenuIds: Id[] | null;
-  setActiveMenuIds(ids: Id[] | null): void;
+  activeMenuIds: Id[];
+  setActiveMenuIds(ids: Id[]): void;
 }
 
 export const SidebarContext = createContext<SidebarContextValue | null>(null);
