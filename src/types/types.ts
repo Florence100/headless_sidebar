@@ -7,6 +7,7 @@ export interface SidebarItemProps {
   label?: string;
   className?: string;
   children?: ReactNode;
+  onSelect?: (id: Id) => void;
 }
 
 export type Id = string;

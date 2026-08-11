@@ -9,6 +9,7 @@ export function SidebarItem({
   icon,
   label,
   className="",
+  onSelect,
   children,
 }: SidebarItemProps) {
   const {
@@ -35,8 +36,14 @@ export function SidebarItem({
       setActiveMenuIds([id]);
     }
 
+    onSelect?.(id);
+
     if (isCollapsed) {
       setOpenedMenuId(null);
+      return;
+    }
+
+    if (isSubmenu) {
       return;
     }
 
