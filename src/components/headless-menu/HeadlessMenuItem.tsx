@@ -1,9 +1,9 @@
 import { Children, useState } from "react";
-import { useSidebarContext } from "../../hooks/useSidebarContext";
-import { SidebarSubmenu } from "./SidebarSubmenu";
-import type { SidebarItemProps } from "../../types/types";
+import { useHeadlessMenuContext } from "./hooks/useHeadlessMenuContext";
+import { HeadlessMenuSubmenu } from "./HeadlessMenuSubmenu";
+import type { HeadlessItemProps } from "./types/types";
 
-export function SidebarItem({
+export function HeadlessMenuItem({
   id,
   parentId,
   icon,
@@ -11,20 +11,20 @@ export function SidebarItem({
   className="",
   onSelect,
   children,
-}: SidebarItemProps) {
+}: HeadlessItemProps) {
   const {
     isCollapsed,
     openedMenuId,
     setOpenedMenuId,
     activeMenuIds,
     setActiveMenuIds,
-  } = useSidebarContext();
+    styles,
+  } = useHeadlessMenuContext();
 
   const [showTooltip, setShowTooltip] = useState(false);
 
   const hasSubmenu = Children.count(children) > 0;
   const isSubmenu = parentId !== undefined;
-
   const isActive = activeMenuIds.includes(id);
 
   const isOpen = hasSubmenu && openedMenuId === id;
@@ -44,6 +44,9 @@ export function SidebarItem({
     }
 
     if (isSubmenu) {
+      if (parentId) {
+        setOpenedMenuId(parentId);
+      }
       return;
     }
 
@@ -76,27 +79,37 @@ export function SidebarItem({
   };
 
   const onMouseLeaveHandler = () => {
+    if (!isCollapsed) {
+      return;
+    }
+  
     setShowTooltip(false);
   };
 
+  const itemStyle = isSubmenu
+    ? styles.submenuItem
+    : hasSubmenu
+      ? styles.group
+      : styles.item;
+
   return (
     <div
-      className={className}
       data-active={isActive}
+      className={`${itemStyle ?? ""} ${className}`}
     >
       {!isSubmenu && (
-        <span
+        <div
           onClick={onClickHandler}
           onMouseEnter={onMouseEnterHandler}
           onMouseLeave={onMouseLeaveHandler}
           className="menu"
         >
-          {icon && <span>{icon}</span>}
+          {icon && <span className="menu-icon">{icon}</span>}
 
           {label && !isCollapsed && (
-            <span>{label}</span>
+            <span className="menu-label">{label}</span>
           )}
-        </span>
+        </div>
       )}
 
       {showTooltip && (
@@ -106,23 +119,23 @@ export function SidebarItem({
       )}
 
       {isSubmenu && (
-        <span
+        <div
           onClick={onClickHandler}
-          className="submenuItem"
+          className="submenu-item"
         >
           {icon && <span>{icon}</span>}
           {label && <span>{label}</span>}
-        </span>
+        </div>
       )}
 
-      {isOpen && (
-        <SidebarSubmenu
+      {hasSubmenu && (
+        <HeadlessMenuSubmenu
           parentId={id}
-          isOpen
+          isOpen={isOpen}
           label={label}
         >
           {children}
-        </SidebarSubmenu>
+        </HeadlessMenuSubmenu>
       )}
     </div>
   );

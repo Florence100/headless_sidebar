@@ -1,8 +1,11 @@
 # Headless Sidebar
 
-Reusable headless sidebar built with **React, TypeScript and Tailwind CSS**.
+Reusable menu components built with **React, TypeScript and Tailwind CSS**.
 
-The component provides interaction logic only. Styling, routing and application state remain in the consumer.
+The project provides two layers:
+
+- **HeadlessMenu** — menu behavior without routing.
+- **RouterMenu** — React Router integration with a ready-to-use compound component API.
 
 ## Features
 
@@ -14,78 +17,89 @@ The component provides interaction logic only. Styling, routing and application 
 * Controlled and uncontrolled state.
 * Responsive mobile behavior.
 * JSX-based composition.
-* No dependency on React Router.
+* Optional React Router integration.
+* Compound component API.
 
-## API
+## HeadlessMenu
 
-### `SidebarProvider`
-
-Controls sidebar state:
+`HeadlessMenu` provides menu behavior without depending on a router.
 
 ```tsx
-<SidebarProvider
+<HeadlessMenuProvider
   collapsed={collapsed}
   onCollapsedChange={setCollapsed}
   activeIds={activeIds}
   onActiveChange={setActiveIds}
 >
-  ...
-</SidebarProvider>
+  <HeadlessMenu>
+    <HeadlessMenuItem
+      id="trends"
+      label="Trends"
+    />
+
+    <HeadlessMenuItem
+      id="clients"
+      label="Clients"
+    >
+      <HeadlessMenuItem
+        id="list"
+        label="List"
+      />
+
+      <HeadlessMenuItem
+        id="reviews"
+        label="Reviews"
+      />
+    </HeadlessMenuItem>
+  </HeadlessMenu>
+</HeadlessMenuProvider>
 ```
 
-### `SidebarItem`
+Routing is not required. Selection and navigation can be handled by the consumer through onSelect.
 
-Defines menu items and nested submenus:
+## RouterMenu
+
+RouterMenu adds React Router integration on top of HeadlessMenu.
+
+It provides navigation and active route detection automatically.
 
 ```tsx
-<SidebarItem
-  id="clients"
-  icon={<Users />}
-  label="Clients"
-  onSelect={() => navigate("/clients")}
->
-  <SidebarItem
-    id="list"
-    label="List"
-    onSelect={() => navigate("/clients/list")}
+<RouterMenu>
+  <RouterMenu.Item
+    to="/trends"
+    label="Trends"
   />
-</SidebarItem>
+
+  <RouterMenu.Group
+    to="/clients"
+    label="Clients"
+  >
+    <RouterMenu.Item
+      to="/clients/list"
+      label="List"
+    />
+
+    <RouterMenu.Item
+      to="/clients/reviews"
+      label="Reviews"
+    />
+  </RouterMenu.Group>
+
+  <RouterMenu.Item
+    to="/payments"
+    label="Payments"
+  />
+</RouterMenu>
 ```
-
-### State vs selection
-
-* `activeIds` / `onActiveChange` — controls which items are active.
-* `onSelect` — notifies the consumer that an item was selected.
-
-This keeps routing and other application logic outside the headless component.
-
-## React Router
-
-Routing is implemented only in the consumer:
-
-```tsx
-<SidebarItem
-  id="trends"
-  label="Trends"
-  onSelect={() => navigate("/trends")}
-/>
-```
-
-`SidebarItem` does not depend on React Router.
+The application does not need to manage menu IDs, active state or navigation handlers.
 
 ## Styling
 
-The sidebar has no predefined visual styles. Pass Tailwind classes through `className`.
+Menu behavior and structural styles are handled internally by the components.
 
-```tsx
-<SidebarItem
-  id="trends"
-  label="Trends"
-  className={sidebarItemStyles}
-/>
-```
+Product-level visual styles can be configured through the shared MenuStyles configuration.
 
-Shared Tailwind classes can be extracted into constants to avoid repetition.
+This keeps implementation details such as submenu positioning, tooltips and internal selectors out of application code.
 
 ## Installation
 

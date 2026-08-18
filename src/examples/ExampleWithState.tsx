@@ -11,68 +11,11 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { SidebarProvider } from "../components/sidebar/SidebarContext";
-import { Sidebar } from "../components/sidebar/Sidebar";
-import { SidebarItem } from "../components/sidebar/SidebarItem";
+import { HeadlessMenuProvider } from "../components/headless-menu/HeadlessMenuProvider";
+import { HeadlessMenu } from "../components/headless-menu/HeadlessMenu";
+import { HeadlessMenuItem } from "../components/headless-menu/HeadlessMenuItem";
 import { useMediaQuery } from "../hooks/useMediaQuery";
-
-// Shared styles for top-level SidebarItem components.
-const sidebarItemStyles = `
-  cursor-pointer
-  relative
-  data-[active=true]:text-blue-500
-  [&:has(.menu)_span]:flex
-  [&:has(.menu)_span]:gap-1
-  [&:has(.menu)_span]:p-1
-  [&:has(.menu)_span]:rounded
-  [&:has(.menu)_span]:min-h-8
-  [&:has(.menu)_span]:hover:bg-gray-200
-  [&_.tooltip]:absolute
-  [&_.tooltip]:right-[-16px]
-  [&_.tooltip]:top-2
-  [&_.tooltip]:translate-x-[100%]
-  [&_.tooltip]:pointer-events-none
-`;
-
-// Shared styles for submenu items
-const submenuItemStyles = `
-  cursor-pointer
-  data-[active=false]:text-[#6b6375]
-  [&:has(.submenuItem)]:rounded
-`;
-
-// Shared styles for a SidebarItem that contains a submenu
-const submenuParentStyles = `
-  cursor-pointer
-  relative
-  data-[active=true]:text-blue-500
-
-  [&:has(.menu)_span]:flex
-  [&:has(.menu)_span]:gap-1
-  [&:has(.menu)_span]:p-1
-  [&:has(.menu)_span]:rounded
-  [&:has(.menu)_span]:min-h-8
-  [&:has(.menu)_span]:hover:bg-gray-200
-
-  [&:has(.submenu.collapsed)_.submenu]:absolute
-  [&:has(.submenu.collapsed)_.submenu]:top-0
-  [&:has(.submenu.collapsed)_.submenu]:right-0
-  [&:has(.submenu.collapsed)_.submenu]:translate-x-[100%]
-  [&:has(.submenu.collapsed)_.submenu]:p-2
-  [&:has(.submenu.collapsed)_.submenu]:rounded
-  [&:has(.submenu.collapsed)_.submenu]:bg-gray-100
-  [&:has(.submenu.collapsed)_.submenu]:border
-  [&:has(.submenu.collapsed)_.submenu]:border-gray-300
-
-  [&_div.submenuTitle]:flex
-  [&_div.submenuTitle]:p-2
-  [&_div.submenuTitle]:font-semibold
-`;
-
-// Additional styles for an expanded submenu
-const expandedSubmenuStyles = `
-  [&:not(:has(.submenu.collapsed))_.submenu]:pl-8
-`;
+import { menuStyles } from "../utils/menuStyles";
 
 export function ExampleWithState() {
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -84,137 +27,89 @@ export function ExampleWithState() {
     setCollapsed(isMobile);
   }, [isMobile]);
 
-  const handleCollapseToggle = () => {
-    setCollapsed((current) => !current);
-  };
-
   return (
-    <SidebarProvider
+    <HeadlessMenuProvider
       collapsed={collapsed}
       onCollapsedChange={setCollapsed}
       activeIds={activeIds}
       onActiveChange={setActiveIds}
+      styles={menuStyles}
     >
       <div className="flex h-screen w-full">
 
-        {/* Sidebar layout and width styles */}
-        <Sidebar
-          className={`
-            flex
-            flex-col
-            gap-2
-            bg-gray-100
-            p-2
-            transition-all
-            duration-300
-            ${collapsed ? "w-14" : "w-64"}
-          `}
+        <HeadlessMenu
+          expandedWidth={"w-64"}
+          collapsedWidth={"w-14"}
+          expandedIcon={<ChevronFirst />}
+          collapsedIcon={<ChevronLast />}
         >
 
-          {/* Simple top-level menu items */}
-          <SidebarItem
+          <HeadlessMenuItem
             id="trends"
             icon={<ChartColumnDecreasing size={24} />}
             label="Trends"
-            className={sidebarItemStyles}
           />
 
-          <SidebarItem
+          <HeadlessMenuItem
             id="tasks"
             icon={<Check size={24} />}
             label="Tasks"
-            className={sidebarItemStyles}
           />
 
-          <SidebarItem
+          <HeadlessMenuItem
             id="tickets"
             icon={<Tickets size={24} />}
             label="Tickets"
-            className={sidebarItemStyles}
           />
 
-          <SidebarItem
+          <HeadlessMenuItem
             id="payments"
             icon={<Wallet size={24} />}
             label="Payments"
-            className={sidebarItemStyles}
           />
 
-          {/* Top-level item with nested submenu */}
-          <SidebarItem
+          <HeadlessMenuItem
             id="clients"
             icon={<Smile size={24} />}
             label="Clients"
-            className={`
-              ${submenuParentStyles}
-              ${expandedSubmenuStyles}
-            `}
           >
-            <SidebarItem
+            <HeadlessMenuItem
               id="list"
               label="List"
-              className={submenuItemStyles}
             />
 
-            <SidebarItem
+            <HeadlessMenuItem
               id="reviews"
               label="Reviews"
-              className={submenuItemStyles}
             />
 
-            <SidebarItem
+            <HeadlessMenuItem
               id="notifications"
               label="Notifications"
-              className={submenuItemStyles}
             />
-          </SidebarItem>
+          </HeadlessMenuItem>
 
-          {/* Top-level item with nested submenu */}
-          <SidebarItem
+          <HeadlessMenuItem
             id="inventory"
             icon={<ScrollText size={24} />}
             label="Inventory"
-            className={`
-              ${submenuParentStyles}
-              ${expandedSubmenuStyles}
-            `}
           >
-            <SidebarItem
+            <HeadlessMenuItem
               id="products"
               label="Products"
-              className={submenuItemStyles}
             />
 
-            <SidebarItem
+            <HeadlessMenuItem
               id="orders"
               label="Orders"
-              className={submenuItemStyles}
             />
 
-            <SidebarItem
+            <HeadlessMenuItem
               id="suppliers"
               label="Suppliers"
-              className={submenuItemStyles}
             />
-          </SidebarItem>
-
-          {/* Sidebar collapse/expand control */}
-          <button
-            type="button"
-            onClick={handleCollapseToggle}
-            className="
-              absolute
-              bottom-2
-              left-2
-              cursor-pointer
-              rounded
-              p-2
-              hover:bg-gray-200
-            "
-          >
-            {collapsed ? <ChevronLast /> : <ChevronFirst />}
-          </button>
-        </Sidebar>
+          </HeadlessMenuItem>
+        </HeadlessMenu>
 
         {/* Demo content showing the currently active IDs */}
         <main className="flex w-full justify-center gap-1">
@@ -224,6 +119,6 @@ export function ExampleWithState() {
         </main>
 
       </div>
-    </SidebarProvider>
+    </HeadlessMenuProvider>
   );
 }

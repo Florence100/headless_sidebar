@@ -11,7 +11,7 @@ import { ExampleWithRouter } from './examples/ExampleWithRouter';
 
 export function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/headless_sidebar">
       <Routes>
         <Route
           path="*"
