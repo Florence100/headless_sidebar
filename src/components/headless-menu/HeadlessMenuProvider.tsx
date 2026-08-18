@@ -1,28 +1,29 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
-import type { Id } from "../../types/types";
-import { type SidebarContextValue, SidebarContext } from "../../hooks/useSidebarContext";
+import type { Id, MenuStyles } from "./types/types";
+import { type HeadlessMenuContextValue, HeadlessMenuContext } from "./hooks/useHeadlessMenuContext";
 
-interface SidebarContextProps {
+interface HeadlessMenuProviderProps {
   collapsed?: boolean; // Controlled collapsed state.
-  collapsedDefault?: boolean; //Initial value for uncontrolled mode.
   onCollapsedChange?: (collapsed: boolean) => void;
   activeIds?: Id[]; //Controlled active menu path.
   onActiveChange?: (ids: Id[]) => void;
+  styles?: MenuStyles;
   children: ReactNode;
 }
 
-export function SidebarProvider({
+export function HeadlessMenuProvider({
   collapsed,
-  collapsedDefault = false,
   onCollapsedChange,
   activeIds,
   onActiveChange,
+  styles,
   children
-}: SidebarContextProps) {
-  const [internalCollapsed, setInternalCollapsed] = useState(collapsedDefault);
+}: HeadlessMenuProviderProps) {
+
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [internalActiveIds, setInternalActiveIds] = useState<Id[]>([]);
-  const [openedMenuId, setOpenedMenuId] = useState<string | null>(null);
+  const [openedMenuId, setOpenedMenuId] = useState<Id | null>(null);
 
   const isCollapsed = collapsed ?? internalCollapsed;
   const currentActiveIds = activeIds ?? internalActiveIds;
@@ -45,18 +46,19 @@ export function SidebarProvider({
     }
   };
 
-  const value: SidebarContextValue = {
+  const value: HeadlessMenuContextValue = {
     isCollapsed,
     toggleCollapse,
     openedMenuId,
     setOpenedMenuId,
     activeMenuIds: currentActiveIds,
     setActiveMenuIds,
+    styles: styles ?? {},
   };
 
   return (
-    <SidebarContext.Provider value={value}>
+    <HeadlessMenuContext.Provider value={value}>
       { children }
-    </SidebarContext.Provider>
+    </HeadlessMenuContext.Provider>
   )
 }
