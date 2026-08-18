@@ -30,7 +30,6 @@ export function HeadlessMenuItem({
   const isOpen = hasSubmenu && openedMenuId === id;
 
   const onClickHandler = () => {
-    console.log('!!!')
     if (parentId) {
       setActiveMenuIds([parentId, id]);
     } else {
