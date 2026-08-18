@@ -20,11 +20,14 @@ export const menuStyles: MenuStyles = {
     data-[active=true]:text-blue-500 
 
     [&_.menu]:flex 
+    [&_.menu]:items-center
     [&_.menu]:gap-2 
-    [&_.menu]:p-2
+    [&_.menu]:px-2
     [&_.menu]:rounded 
-    [&_.menu]:min-h-8 
+    [&_.menu]:min-h-8
     [&_.menu]:hover:bg-gray-200 
+
+    [&_.menu]:min-h-9
 
     [&_.tooltip]:absolute 
     [&_.tooltip]:right-[-16px] 
